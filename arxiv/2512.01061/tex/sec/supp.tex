@@ -1,0 +1,222 @@
+\section*{Appendix}
+
+\section{Teacher Reward Formulations}
+\label{app:teacher-reward}
+
+We decompose the door-opening task into six stages: (0) Walk to door, (1) Pre-grasp, (2) Grasp, (3) Open, (4) Swing, and (5) Pass through door. Table~\ref{tab:door-opening-rewards} summarizes the stage-dependent shaping terms used for the teacher policy.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l l r c}
+\toprule
+\textbf{Term} & \textbf{Expression} & \textbf{Weight} & \textbf{Stage(s)} \\
+\midrule
+\multicolumn{4}{l}{\textbf{Termination / Generic penalties}} \\
+Termination
+  & $\mathbbm{1}_{\{\text{termination}\}}$
+  & $-1000.0$ & $0$--$5$ \\
+
+Delta action rate
+  & $\|\Delta a_t\|_2^{2}$
+  & $-0.01$ & $0$--$5$ \\
+
+DoF velocity
+  & $\|\dot{\mathbf{q}}_{\text{upper, non-finger}}\|_2^{2}$
+  & $-1.0\times 10^{-3}$ & $0$--$5$ \\
+
+DoF acceleration
+  & $\|\ddot{\mathbf{q}}_{\text{upper, non-finger}}\|_2^{2}$
+  & $-1.0\times 10^{-5}$ & $0$--$5$ \\
+
+DoF position limits
+  & $\sum\max\bigl(0, |\mathbf{q}_i - \mathbf{q}_{\text{limit},i}|\bigr)$
+  & $-5.0$ & $0$--$5$ \\
+
+Finger primitive limits
+  & $\bigl|\operatorname{clip}(u_{\text{finger}},[l,u]) - u_{\text{finger}}\bigr|$
+  & $-1.0$ & $0$--$5$ \\
+
+Humanly DoF limit
+  & $\sum\bigl(\operatorname{clip}(\mathbf{q}-\mathbf{q}_{\text{lower}},\text{max}=0) + \operatorname{clip}(\mathbf{q}-\mathbf{q}_{\text{upper}},\text{min}=0)\bigr)$
+  & $-1.0$ & $0$--$5$ \\
+
+DoF overspeed
+  & $\sum\max\bigl(0, |\dot{\mathbf{q}}_i|-2.0\bigr)^{2}$
+  & $-0.1$ & $0$--$5$ \\
+
+Undesired contact
+  & $\sum\mathbbm{1}_{\{\|\mathbf{f}_{\text{contact},i}\|>1\}}$
+  & $-0.2$ & $0$--$5$ \\
+
+Door frame contact
+  & $\sum\|\mathbf{f}_{\text{door frame}}\|_2$
+  & $-0.1$ & $0$--$5$ \\
+
+Door panel contact
+  & $\sum\|\mathbf{f}_{\text{door panel}}\|_2$
+  & $-0.1$ & $0$--$5$ \\
+
+Upright penalty
+  & $\bigl\|R_{\text{torso}}[0,0,1]^{\top} - [0,0,1]^{\top}\bigr\|_2^{2}$
+  & $-1.0$ & $0$--$5$ \\
+
+HOMIE action limit
+  & $\sum\max\bigl(0, |u_{\text{homie},i}|-1.0\bigr)$
+  & $-1.0$ & $0$--$5$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Stage 0: Walk to door}} \\
+
+Walk to door
+  & $\exp\bigl(-\|\mathbf{v}_{\text{robot}}-v_{\text{target}}\hat{\mathbf{d}}_{\text{door}}\|_2^{2}/(2\cdot 0.15^{2})\bigr),\; \sigma=0.15$
+  & $5.0$ & $0$ \\
+
+Upper body deviation
+  & $\|\mathbf{q}_{\text{upper, non-finger}}-\mathbf{q}_{\text{resting}}\|_1$
+  & $-1.0$ & $0$, $5$ \\
+
+Face door
+  & $|\text{wrap}_{\pi}(\|\text{axis-angle}(R_{\text{door}})\|_2)|$
+  & $-1.0$ & $0$--$2$, $5$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Stage 1: Pre-grasp}} \\
+
+Hand-handle orientation
+  & $\exp\bigl(-\|\text{wrap}_{\pi}(\|\text{axis-angle}(R_{\text{hand}}R_{\pm 90})\|_2)\|^{2}/(2\cdot 0.6^{2})\bigr)$
+  & $3.0$ & $1$--$4$ \\
+
+Pregrasp finger pose
+  & $\text{track}(\mathbf{q}_{\text{finger}}, \mathbf{q}_{p0}, \sigma_{\text{pos}}=0.3) + \text{track}(\dot{\mathbf{q}}_{\text{finger}}, 0.6, \sigma_{\text{vel}}=0.2)$
+  & $1.5$ & $0$--$1$, $5$ \\
+
+Unused arm deviation
+  & $\|\mathbf{q}_{\text{unused arm}}-\mathbf{q}_{\text{rest}}\|_1$
+  & $-1.0$ & $1$--$4$ \\
+
+Pre-grasp target distance
+  & $\text{track}(\|\mathbf{p}_{\text{hand}}-\mathbf{p}_{\text{pre-grasp}}\|, 0, \sigma=0.2) + \text{track}(\|\mathbf{v}_{\text{hand}}-v_{\text{target}}\hat{\mathbf{d}}\|, 0, \sigma=0.15)$
+  & $6.0$ & $1$ \\
+
+Penalty not standing still
+  & $\|\mathbf{u}_{\text{HOMIe},[0:3]}\|_2$
+  & $-15.0$ & $1$--$3$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Stage 2: Grasp}} \\
+
+Grasp finger DoF pose
+  & $\text{track}(\mathbf{q}_{\text{finger}}, \mathbf{q}_{p1}, \sigma_{\text{pos}}=0.3) + \text{track}(\dot{\mathbf{q}}_{\text{finger}}, 0.6, \sigma_{\text{vel}}=0.2)$
+  & $3.0$ & $2$--$4$ \\
+
+Grasp target distance
+  & $\exp\bigl(-\|\mathbf{p}_{\text{hand}}-\mathbf{p}_{\text{grasp}}\|_2^{2}/(2\cdot 0.1^{2})\bigr)$
+  & $3.0$ & $2$--$4$ \\
+
+Grasp force
+  & $\sum\bigl(-|\mathbf{f}_{\text{palm},y,z}| + f_{\text{palm},x}\bigr)$
+  & $0.2$ & $1$--$4$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Stage 3: Open door}} \\
+
+Push door handle 
+  & $\dot{\theta}_{\text{handle}} + \operatorname{clip}\!\big(\theta_{\text{handle}}, 0, 45^\circ\big) / 45^\circ$ 
+  & $6.0$ 
+  & $3$ \\
+
+
+Push door hinge
+  & $10\dot{\theta}_{\text{hinge}} + \operatorname{clip}(\theta_{\text{hinge}}, 0, 90^\circ)/90^\circ$
+  & $6.0$ & $3$--$4$ \\
+
+Push door force
+  & $\operatorname{clip}(\mathbf{f}_{\text{hand},x}, 0, 20)$
+  & $0.3$ & $3$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Stage 4: Swing door \& Stage 5: Pass through Door}} \\
+
+Don't push door handle
+  & $-\dot{\theta}_{\text{handle}} + (45^\circ - \theta_{\text{handle}})/45^\circ$
+  & $3.0$ & $4$--$5$ \\
+
+Target root distance
+  & $\text{track}(\mathbf{v}_{\text{root}}\cdot\hat{\mathbf{d}}_{\text{target}}, v_{\text{target}}, \sigma=0.2) + \text{track}(\|\mathbf{p}_{\text{root}}-\mathbf{p}_{\text{target}}\|, 0, \sigma=0.2)$
+  & $12.0$ & $4$--$5$ \\
+
+Penalty standing still
+  & $\exp\bigl(-\|\mathbf{u}_{\text{HOMIE},[0:3]}\|_2^{2}/(2\cdot 0.05^{2})\bigr)$
+  & $-1.0$ & $4$ \\
+
+\midrule
+\multicolumn{4}{l}{\textbf{Always-on rewards}} \\
+
+Stage progress
+  & $\text{stage}_{\text{current}}$
+  & $1.0$ & $0$--$5$ \\
+
+Task completion
+  & $\mathbbm{1}_{\{\text{complete}\}}$
+  & $4.0$ & $0$--$5$ \\
+
+Success save time
+  & $\mathbbm{1}_{\{\text{success}\}}\cdot\text{remaining time ratio}$
+  & $0.5$ & $0$--$5$ \\
+
+\bottomrule
+\end{tabular}
+\caption{Reward components for door opening task.  Track($x$, $\mu$, $\sigma$) denotes Gaussian tracking reward $\exp(-(x-\mu)^2/(2\sigma^2))$.}
+\label{tab:door-opening-rewards}
+\end{table*}
+
+\section{Synthetic Generation Pipeline of Doors}
+\label{app:door}
+
+The procedural generation of doors can be divided into two phases. In phase 1, we generate the physical properties of the doors. In phase 2, we apply randomized texture and lighting.
+
+Table \ref{tab:door-rand-properties} summarizes the physical property randomization ranges. We first spawn the geometries for the wall, door panel, push-bar / handle, floor, and latch. Then we add physical joints for the door hinge and handle. The latch is modeled as a mimic joint attached to the joint angle of the handle. Damping, stiffness, and max force are added to the actuators. The door handle actuator is set to have a -5 degrees (upwards) target joint position to simulate the tension of the spring-loaded handle joint even at level position. Additional random features such as key hole, door frame, and other decorations are spawned each at 50\% chance.
+
+We make use of OmniPBR materials and create multiple variants for each by randomizing sub-identifier, texture transform, albedo color, tint color, etc. Every [0.9, 1.1] seconds, a geometry in the scene will have its material randomly drawn. For background dome light texture, we use all publicly available ones in Omniverse, plus an additional 5233 ones from Poly Haven, covering diverse indoor, outdoor, and various times-of-day scenes.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{\textbf{Property}} & \textbf{Range} & \textbf{Unit} \\
+\midrule
+Panel Width & 0.8-1.1 & m \\
+Panel Height & 1.9-2.2 & m \\
+Handle Height & 0.85-0.95 & m \\
+Handle to Edge Distance & 0.04-0.1 & m \\
+Handle Type & \{\makecell[l]{knob, lever, pushbar, handle, flat}\} & \\
+Open Handedness & \{left, right\} & \\
+Open Direction & \{in, out\} & \\
+Weight & 80-120 & kg \\
+Hinge Max Force & 20-30 & Nm \\
+Hinge Damping & 5-10 & (kg m$^2$) / (s$^2$ $^{\circ}$) \\
+Hinge Stiffness & 10-20 & (kg m$^2$) / (s$^2$ $^{\circ}$) \\
+Handle Max Force & 1-3 & Nm \\
+Handle Damping & 0.1-0.6 & (kg m$^2$) / (s$^2$ $^{\circ}$) \\
+Handle Stiffness & 30-50 & (kg m$^2$) / (s$^2$ $^{\circ}$) \\
+\bottomrule
+\end{tabular}
+\caption{Physical property randomization range of doors in IsaacLab.}
+\label{tab:door-rand-properties}
+\end{table}
+
+\section{Teleoperation Baseline Setup}
+\label{app:teleop}
+
+For the experiments in Section~\ref{sec:experiment}, we use a PICO 4 Ultra headset with two handheld controllers for both expert and non-expert teleoperators. The teleoperation interface outputs a command consisting of three upper-body SE(3) poses (head and both wrists), finger joint angles, waist height, and a planar navigation command specifying desired root linear velocity $\mathbf{v} \in \mathbb{R}^2$ and angular velocity $\omega \in \mathbb{R}$ for heading control. We employ the Pinocchio library~\cite{carpentier2019pinocchio} to solve inverse kinematics and map wrist poses to joint-space configurations.
+
+% To enable scalable and portable data collection for tasks that do not require precise foot placement, we also introduce a lightweight mobile bimanual VR teleoperation interface that operates with the PICO headset and the two handheld controllers (no ankle trackers needed for this mode). The teleoperation interface outputs a compact command consisting of three upper-body SE(3) poses (head and both wrists), finger joint angles, waist height, a locomotion mode (slow walk or fast walk), and a navigation command specifying desired root velocity and heading. 
+ 
+\section{Real World Deployment Setup}
+\label{app:deploy}
+
+We conduct our experiments on a 29-DoF Unitree G1 humanoid robot, equipped with two 7-DoF 3-finger dexterous hands. Perception is provided by an Intel RealSense D435i camera, without the depth output. Policy inference runs on a desktop workstation with an Intel i9-14900K CPU and an NVIDIA RTX~4090 GPU.

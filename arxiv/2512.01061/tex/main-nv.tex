@@ -1,0 +1,203 @@
+\pdfoutput=1
+\documentclass[10pt,logo,copyright]{nvidiatechreport}
+\linespread{1.15}
+
+\input{packages}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+
+\newcommand{\FIGREF}[1]{Fig.~\ref{#1}} % Fig. or Figure
+\definecolor{darkred}{rgb}{0.7, 0.0, 0.0}
+\newcommand{\checkthis}[1]{\textcolor{darkred}{#1}}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}} % Tick mark
+\newcommand{\xmark}{\ding{55}} % Cross mark
+\usepackage{wrapfig}
+
+\usepackage[nameinlink]{cleveref}
+\crefname{equation}{Eq.}{Eqs.}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{section}{Sec.}{Sec.}
+\crefname{appendix}{App.}{App.}
+\crefname{table}{Tab.}{Tabs.}
+\crefname{algorithm}{Algo}{Algo}
+\crefname{thm}{Thm}{Thm}
+\Crefname{thm}{Thm}{Thm}
+\crefname{prop}{Prop}{Prop}
+\usepackage{longtable}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage[table,xcdraw]{xcolor}
+
+\newcommand{\Exp}[2]{\mathbb{E}_{\,#1}\!\left[\,#2\,\right]}
+\newcommand{\method}{DoorMan}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\newcommand{\minisection}[1]{\noindent{\textbf{#1}.}}
+
+\newcommand{\haoru}[1]{\textcolor{blue}{HX: #1}}
+\newcommand{\dantong}[1]{\textcolor{cyan}{TH: #1}}
+\newcommand{\zi}[1]{\textcolor{teal}{Zi: #1}}
+\newcommand{\qiayuan}[1]{\textcolor{brown}{QB: #1}}
+\newcommand{\guanya}[1]{\textcolor{magenta}{GS: #1}}
+\newcommand{\trevor}[1]{\textcolor{red}{JF: #1}}
+\newcommand{\jason}[1]{\textcolor{orange}{YZ: #1}}
+
+\usepackage{booktabs, tabularx, pifont, array, bbm, float, makecell, multirow, }
+\usepackage{ragged2e}
+\definecolor{nvidiagreen}{HTML}{76B900}
+\definecolor{bestrow}{HTML}{E1EBD7}
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\input{macros}
+
+
+\newcommand{\crefnames}[3]{%
+  \@for\next:=#1\do{%
+    \expandafter\crefname\expandafter{\next}{#2}{#3}%
+  }%
+}
+
+% \title{\modelname{}: An Open Foundation Model for Generalist Humanoid Robots}
+% \title{\shortname }
+\title{Opening the Sim-to-Real Door for Humanoid Pixel-to-Action Policy Transfer}
+
+%\title{\modelname{}: A Foundation Model for Humanoid Robotics}
+
+
+
+
+\begin{document}
+
+\author{
+  Haoru Xue$^{1,2*}$,
+  Tairan He$^{1,3*}$,
+  Zi Wang$^{1*}$,
+  Qingwei Ben$^{1,4}$,
+  Wenli Xiao$^{1,3}$,
+  Zhengyi Luo$^{1}$,
+  Xingye Da$^{1}$,
+  Fernando Casta\~neda$^{1}$,
+  Guanya Shi$^{3}$,
+  Shankar Sastry$^{2}$,
+  Linxi ``Jim'' Fan$^{1\dagger}$,
+  Yuke Zhu$^{1\dagger}$\\
+  \small $^{1}$NVIDIA \quad
+         $^{2}$UC Berkeley \quad
+         $^{3}$CMU \quad
+         $^{4}$CUHK\\
+  \small $^{*}$Equal Contribution \quad
+         $^{\dagger}$Project Leads
+}
+%%%%%%%%%%%%%%%%% END OF PREAMBLE %%%%%%%%%%%%%%%%
+
+% \makeatletter
+% \let\@oldmaketitle\@maketitle
+%     \renewcommand{\@maketitle}{\@oldmaketitle
+%     \centering
+%     \includegraphics[width=\textwidth]{figs/drafts/fig_teaser-v3.pdf}
+    
+%     % \vspace{-0.5cm}
+%     \vspace{-0.2cm}
+%     \captionof{figure}{\method{}, a simulation-trained, RGB-only humanoid loco-manipulation policy, opens diverse doors in the real world.}
+%     \vspace{0.5cm}
+%     % \vspace{-0.3cm} % this command is important for spacing!!! dont comment or delete it -- zc after long tuning.
+%     \label{fig:firstpage}
+%     \setcounter{figure}{1}
+%   % \bigskip
+%   }
+% \makeatother
+
+
+\makeatletter
+\let\oldmaketitle\maketitle
+\renewcommand{\maketitle}{%
+  \oldmaketitle%
+  \begin{center}
+    \includegraphics[width=\textwidth]{figs/drafts/fig_teaser-v3.pdf}%
+  \end{center}
+  \vspace{0.3em}
+
+  \begingroup
+  \small
+  \justifying          
+  Figure 1: \textbf{\method{}}, a simulation-trained, RGB-only humanoid loco-manipulation policy, opens diverse, real-world doors.
+  \par
+  \endgroup
+
+  \vspace{0.5cm}%
+}
+\makeatother
+
+%%%%%%%%%%%%%%%% START OF MAIN TEXT %%%%%%%%%%%%%%%
+
+% Insert the title and author list
+\maketitle
+\newcommand{\tingwu}[1]{\textcolor{blue}{ [TW: \textbf{#1}]}}
+\newcommand{\zen}[1]{\textcolor{green}{ [Zen: \textbf{#1}]}}
+\newcommand{\ye}[1]{\textcolor{teal}{ [Ye: \textbf{#1}]}}
+
+\input{sec/0_abstract}
+\abscontent
+
+\input{sec/0_abstract}    
+\input{sec/1_intro}
+\input{sec/3_method}
+\input{sec/4_experiment}
+\input{sec/2_relatedworks}
+\input{sec/5_conclusion}
+\input{sec/6_acknowledgement}
+
+% \begin{figure}[th]
+%     \centering
+%     \includegraphics[width=\textwidth]{figs/main_results.pdf}
+%     \caption{\shortname enables diverse humanoid tasks through a universal control policy that handles diverse input modalities and control interfaces.}
+%     \label{fig:main_result}
+% \end{figure}
+
+% \input{tex/introduction}
+
+
+% \section{Results}
+
+% \input{tex/result_universal_motion_tracking}
+% \input{tex/result_interactive_planner}
+% \input{tex/result_multi_modal_control}
+% \input{tex/result_teleoperation_foundation_model}
+
+% \input{tex/discussion}
+
+
+% \section{Materials and Methods}
+% \input{tex/materials_method_dataset}
+% \input{tex/materials_method_scaling_up_motion_tracking}
+% \input{tex/materials_method_kinematic_planner}
+% \input{tex/materials_method_genmo}
+% \input{tex/materials_method_deployment}
+
+% \input{tex/acknowledgements}
+
+%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%
+
+\clearpage % Clear all remaining figures and tables then start a new page
+
+% \checkthis{Timeline: Initial draft due 5pm PT Tuesday (2/25).}
+% \checkthis{If your names are in \textbf{bold}, it means that your assigned sections are required for the initial draft. }
+
+
+
+
+
+\setcitestyle{numbers}
+\bibliographystyle{plainnat}
+\bibliography{science_template}
+
+\appendix
+\newpage
+\clearpage
+\input{sec/supp}
+
+\end{document}
