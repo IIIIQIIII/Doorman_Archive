@@ -113,6 +113,22 @@ See `reward_and_staged_reset.md` for details.
 - `teacher_training_recipe.md` — architecture, observations, actions, PPO setup, HOMIE integration, and training flow.
 - `reward_and_staged_reset.md` — six-stage reward shaping and staged-reset exploration.
 - `reproducibility_notes.md` — exact archived source paths, checkpoint evidence, and caveats when reproducing the original run.
+- `diagnostics/stage3_gap_step0750_20260819/` — runtime-only instrumentation and results for the current clean-source reproduction at model step 750.
+
+## Current reproduction diagnostic
+
+The step-750 checkpoint from the 2026-08-19 clean-source reproduction was
+evaluated without changing its policy, reward, observations, actions, or stage
+logic. Of 128 first episodes, 118 entered Stage 3 and none reached Stage 4.
+The handle was already depressed for most Stage 3 samples, while the door hinge
+never exceeded 0.935 degrees. Contact and opening torque existed but were not
+sustained together: the longest interval with both a valid four-contact grasp
+and opening torque above 1 Nm was 0.38 seconds.
+
+This is a diagnosis of the in-progress local reproduction, not a claim about
+the official released teacher. See
+`diagnostics/stage3_gap_step0750_20260819/README.md` for the measurements,
+method, scripts, and artifact locations.
 
 ## Primary archived sources
 

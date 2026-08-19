@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "num_envs": 128,
+  "policy_dt": 0.02,
+  "reward_modified": false,
+  "environment_modified": false,
+  "force_sensor_semantics": "raw object-to-hand contact force from official sensor",
+  "force_on_door_semantics": "negative of object-to-hand force (Newton third-law estimate)",
+  "hinge_origin": "official generated hinge local position transformed by door root quaternion",
+  "application_point": "official grasp_target world position",
+  "tau_hinge_sensor_z": "world-Z component of cross(grasp_target-hinge_origin, official_force_sensor)",
+  "tau_open": "cross(grasp_target-hinge_origin, official_force_sensor) projected on positive generated hinge axis",
+  "force_tangential_alignment": "tau_open/(norm(radial_lever)*norm(official_force_sensor))"
+}

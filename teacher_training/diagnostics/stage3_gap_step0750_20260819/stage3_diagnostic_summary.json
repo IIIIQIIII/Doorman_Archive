@@ -1,0 +1,49 @@
+{
+  "stage3_enter_count": 118,
+  "stage3_to_stage4_count": 0,
+  "stage4_reach_rate_per_stage3_entry": 0.0,
+  "stage3_rows": 41111,
+  "stage3_rollout_segments": 118,
+  "hinge_angle_mean": 0.002105624921494553,
+  "hinge_angle_p95": 0.006449336651712656,
+  "hinge_angle_max": 0.016313208267092705,
+  "hinge_velocity_mean": 0.00045237565480452005,
+  "hinge_velocity_positive_p95": 0.0108277658931911,
+  "handle_angle_mean": 0.7398537644724282,
+  "handle_angle_p95": 0.7853982448577881,
+  "raw_hand_force_xyz_mean": [
+    -2.1068179585746654,
+    -22.373881172388906,
+    -32.22889617175814
+  ],
+  "raw_hand_force_xyz_abs_p95": [
+    18.099332809448242,
+    34.61848258972168,
+    56.801448822021484
+  ],
+  "tau_hinge_sensor_mean": 2.121502855524686,
+  "tau_open_mean": 2.121502855524686,
+  "tau_open_abs_p95": 14.856388568878174,
+  "tau_open_p95": 13.245334148406982,
+  "tau_open_max": 47.24492645263672,
+  "force_tangential_alignment_mean": 0.05888611324158608,
+  "force_tangential_alignment_p95": 0.3902922719717026,
+  "force_tangential_alignment_positive_fraction": 0.6392449709323539,
+  "stage3_duration_steps_mean": 348.39830508474574,
+  "stage3_duration_steps_p95": 421.0,
+  "stage3_duration_steps_max": 455,
+  "handle_contact_count_mean": 2.921480868867213,
+  "handle_contact_count_p95": 4.0,
+  "valid_handle_contact_fraction": 0.10722191141057139,
+  "longest_rollout": {
+    "env_id": 87,
+    "episode_id": 0,
+    "steps": 455
+  },
+  "correlations": {
+    "force_sensor_x_vs_hinge_velocity": 0.12848416795480563,
+    "force_sensor_x_vs_hinge_angle": 0.13712484459334295,
+    "tau_open_vs_hinge_velocity": 0.10750671475949093,
+    "tau_open_vs_hinge_angle": 0.12229532432534264
+  }
+}

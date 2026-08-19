@@ -91,6 +91,32 @@ Main signals:
 
 The task therefore does not terminate at “door moved.” The policy must continue coordinating whole-body motion until the robot traverses the doorway.
 
+## Stage 3 reproduction diagnostic (2026-08-19)
+
+Runtime-only instrumentation was applied to the clean-source reproduction at
+model step 750. Reward code and checkpoint weights were unchanged. In 128 first
+episodes:
+
+- 118 episodes entered Stage 3;
+- 0 transitioned from Stage 3 to Stage 4;
+- the handle angle averaged 42.39 degrees and was above 35 degrees for 92.10%
+  of Stage 3 samples;
+- the hinge angle reached at most 0.935 degrees, below the 10-degree Stage 4
+  threshold;
+- valid four-contact grasp occupancy was 10.72%;
+- valid grasp and opening torque above 1 Nm overlapped for at most 0.38 seconds.
+
+The observed gap is therefore not primarily handle release or insufficient raw
+force. It is failure to sustain a valid grasp and transmit tangential force into
+positive hinge-axis torque long enough to rotate the panel.
+
+No bridge reward has been added. If this is tested later, it should be a
+controlled ablation gated on handle-down state and valid multi-contact grasp,
+with a persistence-sensitive target such as positive opening torque or
+tangential alignment. An ungated force bonus would be especially vulnerable to
+contact farming. Full evidence and instrumentation are under
+`diagnostics/stage3_gap_step0750_20260819/`.
+
 ## 8. Always-on positive progress signals
 
 The appendix/config includes:

@@ -144,7 +144,32 @@ For someone attempting to reproduce the teacher from this archive:
 6. evaluate the resulting teacher checkpoint before starting DAgger;
 7. point `teacher_actor_path` in the student config to the newly trained checkpoint.
 
-## 8. Source map for audit
+## 8. Current clean-source reproduction evidence
+
+A runtime-instrumented evaluation of the 2026-08-19 reproduction's step-750
+checkpoint is archived under:
+
+```text
+teacher_training/diagnostics/stage3_gap_step0750_20260819/
+```
+
+It contains the aggregate JSON, event CSV, longest-Stage-3 timeline plot,
+instrumentation/analysis scripts, and a detailed report. The raw time-series,
+evaluation log, and immutable checkpoint snapshot remain on the training server
+at the path recorded in that report; they are intentionally not duplicated in
+this compact archive.
+
+The instrumentation was injected at runtime outside the official clean
+worktree. It did not alter reward semantics or checkpoint weights. The built-in
+evaluator completed all 128 episodes but failed afterward while serializing one
+of its Tensor-valued metrics; the independent diagnostic CSV, JSON, and plot
+were already complete and are unaffected.
+
+These measurements describe one in-progress local reproduction checkpoint.
+They must not be presented as performance of the official historical
+`model_step_020450.pt` teacher.
+
+## 9. Source map for audit
 
 ### Paper
 
