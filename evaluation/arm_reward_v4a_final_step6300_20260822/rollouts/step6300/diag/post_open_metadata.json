@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "reward_modified": false,
+  "observation_modified": false,
+  "action_modified": false,
+  "termination_modified": false,
+  "reset_modified": false,
+  "event_windows": {
+    "swing": "reward-time stage == 4 and completion condition false",
+    "through": "reward-time stage == 5 and completion condition false",
+    "complete_tail": "root-x completion condition true before reset",
+    "post_open": "union of swing, through, and complete_tail"
+  },
+  "speed_threshold_mps": 0.1,
+  "arm_recovery_threshold_normalized_mean_abs_error": 0.1,
+  "arm_recovery_persistence_steps": 25,
+  "arm_recovery_persistence_s": 0.5,
+  "policy_dt_s": 0.02,
+  "num_envs": 128,
+  "patched_module": "/sda/mashijian/doorman_arm_reward_v4a_timing_20260822/code/gr00t/rl/envs/door/door_open_homie.py",
+  "crab_angle_semantics": "angle between pelvis forward and planar root velocity, computed as atan2(|body_vy|, body_vx)",
+  "homie_command_semantics": "env.get_physical_homie_commands(), body-frame vx/vy/yaw-rate",
+  "actual_velocity_semantics": "env.base_lin_vel body-frame vx/vy",
+  "arm_set": [
+    "left_shoulder_pitch_joint",
+    "left_shoulder_roll_joint",
+    "left_shoulder_yaw_joint",
+    "left_elbow_joint",
+    "left_wrist_roll_joint",
+    "left_wrist_pitch_joint",
+    "left_wrist_yaw_joint",
+    "right_shoulder_pitch_joint",
+    "right_shoulder_roll_joint",
+    "right_shoulder_yaw_joint",
+    "right_elbow_joint",
+    "right_wrist_roll_joint",
+    "right_wrist_pitch_joint",
+    "right_wrist_yaw_joint"
+  ],
+  "per_joint_diagnostics": "arm_joint_timeseries.csv",
+  "v2_kinematic_diagnostics": "post_open_kinematics_v2.csv",
+  "waist_set": [
+    "waist_yaw_joint",
+    "waist_roll_joint",
+    "waist_pitch_joint"
+  ],
+  "bilateral_arm_groups": {
+    "left_arm": [
+      "left_shoulder_pitch_joint",
+      "left_shoulder_roll_joint",
+      "left_shoulder_yaw_joint",
+      "left_elbow_joint",
+      "left_wrist_roll_joint",
+      "left_wrist_pitch_joint",
+      "left_wrist_yaw_joint"
+    ],
+    "right_arm": [
+      "right_shoulder_pitch_joint",
+      "right_shoulder_roll_joint",
+      "right_shoulder_yaw_joint",
+      "right_elbow_joint",
+      "right_wrist_roll_joint",
+      "right_wrist_pitch_joint",
+      "right_wrist_yaw_joint"
+    ],
+    "proximal": "shoulder pitch/roll/yaw plus elbow",
+    "wrist": "wrist roll/pitch/yaw"
+  },
+  "pelvis_yaw_semantics": "yaw from env.root_states quaternion xyzw",
+  "torso_yaw_semantics": "yaw from torso rigid-body quaternion xyzw",
+  "torso_relative_pelvis_yaw_semantics": "wrapped torso world yaw minus pelvis world yaw"
+}

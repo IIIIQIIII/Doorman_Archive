@@ -78,15 +78,67 @@ its smaller-than-production batch geometry produced the trainer's known
 zero-microbatch `IndexError` after rollout collection. The formal run retains
 the already validated V3 production geometry.
 
-The supervisor launched the four-rank formal run at 16:24 CST. Read-only
-monitoring is fixed at 15-minute boundaries. No reward/config change is allowed
-inside this 100-iteration window; only a crash, NaN/OOM/NCCL failure, invalid
-checkpoint, or a confirmed task-success safety violation permits intervention.
+The supervisor launched the four-rank formal run at 16:24 CST and completed the
+frozen window at 17:22 CST. It validated step6300, waited 120 seconds for the
+trainer to exit after checkpoint creation, then terminated only the owned
+process group. There was no training Traceback, OOM, NCCL failure, or NaN.
 
-Final acceptance uses the same paired full-reset protocol. V4-A must preserve
-task completion within five percentage points of the reference while improving
-post-open bilateral arm behavior. If it preserves success but arm degradation
-returns, the next experiment is a separate V4-B no-worsening barrier; it is not
-part of V4-A.
+- step6300 checkpoint size: 32,324,131 bytes;
+- embedded `global_step`: 6300;
+- SHA256: `46af3771e4bcafd9022c5f6ec0733b7fffe3deaffaab771ffbec06193ba74271`;
+- final process state: no V4-A trainer or evaluator remained;
+- GPUs 2--7 returned to 1 MiB/0% utilization; GPUs 0 and 1 were never used by
+  this run.
+
+The final online row at iteration 6300 reported mixed
+`average_goal_reached=0.8802`, cumulative reset-source Stage-0 success 0.6975,
+task-progress mean 0.6037, and gate mean 0.4034. The arm values were left/right
+total error 0.1697/0.1162, proximal error 0.0649/0.0642, wrist error
+0.2033/0.1198, raw action-delta RMS 0.6592, harmful outward magnitude 0.0946,
+recovery progress -0.0289/s, settled fraction 0.1786, and relapse count 0.4854.
+The Stage-0 number is cumulative and startup-biased, so it is only a trend
+diagnostic; the paired full-reset evaluation below is authoritative.
+
+## Final paired full-reset evaluation
+
+The same V4 code/config, seed 42, staged resets disabled, and 128 environments /
+128 completed episodes were used for both frozen checkpoints. The anchor ran on
+GPU 6 and the candidate on GPU 7. Both summaries are schema v2, contain exactly
+128 recorded episodes, and report zero unfinished environments.
+
+- step6200: 115/128 task successes (89.84375%);
+- step6300: 112/128 task successes (87.50%);
+- change: -2.34375 percentage points;
+- task-preservation gate (drop no greater than five points): **PASS**.
+
+Compared with step6200, step6300 improved Q4 on seven of eight bilateral
+arm/action metrics and improved all six physical-error slopes. The Q4 changes
+were: left/right total error -0.0412/-0.0033, left/right proximal error
+-0.0194/-0.0050, left/right wrist error -0.0703/-0.0011, left action-delta RMS
+-0.1149, and right action-delta RMS +0.0388. The last item is the only Q4
+regression.
+
+V4-A nevertheless fails the predeclared absolute arm-quality gates: both total
+error Q4/Q2 ratios remain above 1.2, not every error slope is at most 0.005/s,
+left-wrist Q4 remains above 0.12, right-proximal Q4 remains above 0.06, and both
+action-delta Q4 values remain above 0.25. Therefore V4-A validates the timing
+hypothesis and preserves the task, but it does **not** fully solve the bilateral
+post-open arm attractor. A separately scoped V4-B no-worsening barrier is the
+next controlled experiment; restarting or silently extending V4-A would not be
+a valid causal test.
+
+The official evaluator attempted to write `metrics_eval.json` after completing
+all 128 episodes and raised `TypeError: Object of type Tensor is not JSON
+serializable`; those two files are consequently truncated and must not be used.
+This is a post-rollout serialization defect. The independent diagnostics hook
+had already written and validated the schema-v2 summary, per-episode JSONL, and
+kinematic analysis, which are the inputs to the paired comparison. The defect
+and complete launcher logs are retained in the archive instead of being hidden.
+
+Reproduction script, immutable hashes, paired report, compact per-episode
+evidence, and launcher/supervisor logs are under
+`evaluation/arm_reward_v4a_final_step6300_20260822/`. Large raw time-series CSVs
+and checkpoint binaries remain on the server and are referenced by hash rather
+than duplicated in Git.
 
 This file is outside `github/` and `arxiv/`; neither directory is modified.

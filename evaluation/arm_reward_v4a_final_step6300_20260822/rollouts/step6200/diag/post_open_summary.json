@@ -1,0 +1,93 @@
+{
+  "episode_count": 128,
+  "successful_episode_count": 115,
+  "task_success_rate": 0.8984375,
+  "successful_episode_metrics": {
+    "post_open_crab_angle_p95_deg": {
+      "count": 115,
+      "mean": 64.24724570067032,
+      "p50": 61.99808826446532,
+      "p95": 91.11964317321777,
+      "min": 50.24844932556152,
+      "max": 101.91526565551774
+    },
+    "post_open_crab_angle_gt30_fraction": {
+      "count": 115,
+      "mean": 0.5543164479033906,
+      "p50": 0.5472972972972973,
+      "p95": 0.640644165787726,
+      "min": 0.44025157232704404,
+      "max": 0.697986577181208
+    },
+    "post_open_lateral_velocity_ratio_mean": {
+      "count": 115,
+      "mean": 0.5060597181981585,
+      "p50": 0.5008300110212106,
+      "p95": 0.5651931099889562,
+      "min": 0.4489399171383091,
+      "max": 0.5876467057543606
+    },
+    "post_open_homie_lateral_command_ratio_mean": {
+      "count": 115,
+      "mean": 0.515337717184399,
+      "p50": 0.5111523722787833,
+      "p95": 0.5690518461174431,
+      "min": 0.46605243410246333,
+      "max": 0.5912585812081569
+    },
+    "post_open_homie_velocity_tracking_error_mean_mps": {
+      "count": 115,
+      "mean": 0.6617711732595242,
+      "p50": 0.6590780883238015,
+      "p95": 0.7014976495260643,
+      "min": 0.5930986925724553,
+      "max": 0.7341343505308032
+    },
+    "stage5_arm_rest_deviation_p95_rad": {
+      "count": 115,
+      "mean": 0.6379339732294498,
+      "p50": 0.6401578783988953,
+      "p95": 0.6567987471818924,
+      "min": 0.5886176139116287,
+      "max": 0.6712194591760635
+    },
+    "stage5_arm_rest_deviation_p95_normalized": {
+      "count": 115,
+      "mean": 0.1626072661643443,
+      "p50": 0.16317296922206875,
+      "p95": 0.16802004061639308,
+      "min": 0.14942778125405312,
+      "max": 0.17169256731867788
+    },
+    "stage5_arm_action_delta_rms_p95": {
+      "count": 115,
+      "mean": 0.711574324965477,
+      "p50": 0.7119120299816132,
+      "p95": 0.7293727827072143,
+      "min": 0.6771164149045944,
+      "max": 0.7397201657295227
+    },
+    "stage5_arm_joint_limit_margin_min_normalized": {
+      "count": 115,
+      "mean": -1.8527446265490812e-07,
+      "p50": -1.2088830203538237e-07,
+      "p95": -5.137752836503759e-08,
+      "min": -1.2693271855823696e-06,
+      "max": -3.022207550884559e-08
+    },
+    "arm_recovery_time_s": {
+      "count": 115,
+      "mean": 0.5,
+      "p50": 0.5,
+      "p95": 0.5,
+      "min": 0.5,
+      "max": 0.5
+    }
+  },
+  "successful_arm_recovered_before_completion_rate": 1.0,
+  "schema_version": 2,
+  "recorded_episode_count": 128,
+  "active_unfinished_env_count": 0,
+  "metric_scope": "first completed episode per environment",
+  "v2_kinematic_timeseries": "post_open_kinematics_v2.csv"
+}
