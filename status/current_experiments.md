@@ -394,6 +394,101 @@ this milestone. The first evaluation outputs inherited a stale
 - Iteration time was 80.11 s. Processes were healthy, with no reported error.
 - Monitor-only mode remains in force; no eval or ablation was launched.
 
+## Official Stage-5 / complete-task breakthrough at iteration 3123
+
+- Live read-only inspection at 19:49 Asia/Shanghai confirmed one parent process
+  and all four training ranks remained healthy.
+- Iteration 3123 reached `average_stage=4.3913`,
+  `average_goal_reached=0.4028`, and
+  `average_last_stage_goal_reached=0.4028`.
+- Complete-task reward was stably nonzero (`rew_complete=0.0817`); adjacent
+  iterations 3120-3122 also reported goal rates 0.3937-0.4044 and nonzero
+  complete reward 0.0758-0.0870. This is sustained Stage 4 -> 5 / task-complete
+  behavior, not a one-iteration spike.
+- Iteration 3123 reward components were handle 0.3057, force 0.1347, hinge
+  1.6122, `dont_push_handle` 1.0654, and `target_root_distance` 2.3508.
+- Throughput was 23,132 steps/s; collection/learning were 41.229/4.100 s and
+  total iteration time was 45.33 s.
+- Latest checkpoint was `global_step=3100`, `tot_timesteps=3250585600`, with
+  modification time 19:31:47 on 2026-08-20. No Traceback, CUDA OOM, NCCL error,
+  RuntimeError, or NaN was found in the training log.
+- Monitor-only mode remains in force; no eval, restart, reward change, or
+  ablation was launched.
+
+### Training-window goal rate crosses 50%
+
+- Iterations 3241 and 3242 reported `average_goal_reached` of 0.5074 and
+  0.5075, with matching last-stage goal values and complete reward of 0.1093
+  and 0.1091. This is the first monitored adjacent-iteration window above 50%.
+- Iteration 3242 reached `average_stage=4.4934` at 3,399,483,392 total
+  timesteps, with 24,196 steps/s throughput and 43.34 s iteration time.
+- Parent plus four ranks remained healthy; all eight GPUs were visible and no
+  Traceback, OOM, NCCL error, RuntimeError, or NaN was found. This remains a
+  training-window milestone, not a substitute for independent full-reset eval.
+
+### Training-window goal rate crosses 60%
+
+- Iterations 3361 and 3362 reported `average_goal_reached` of 0.6258 and
+  0.6300, with complete reward of 0.1319 and 0.1315. This is the first
+  monitored adjacent-iteration window above 60%.
+- Iteration 3362 reached `average_stage=4.5572` at 3,525,312,512 total
+  timesteps, with 23,839 steps/s throughput and 43.98 s iteration time.
+- The step-3350 checkpoint was valid; parent plus four ranks remained healthy,
+  all eight GPUs were visible, and no monitored runtime/error signature was
+  found. This remains a training-window milestone pending independent eval.
+
+### Training-window goal rate crosses 70% and curriculum activates
+
+- Iterations 3470 and 3471 reported `average_goal_reached` of 0.7176 and
+  0.7209, with complete reward of 0.1531 and 0.1502. This is the first
+  monitored adjacent-iteration window above 70%.
+- At iteration 3471, `average_stage=4.6172`; the official curriculum began
+  annealing `termination_level` and `reward_penalty_scale` to 0.9731 and
+  0.9733. Goal/complete remained strong as the curriculum changed.
+- Iteration 3471 reached 3,639,607,296 total timesteps at 22,821 steps/s and
+  45.95 s/iteration. The step-3450 checkpoint was valid; parent plus four
+  ranks, eight-GPU visibility, and error scans remained healthy.
+- This is a training-window/curriculum milestone, not a substitute for an
+  independent full-reset evaluation.
+
+### Training-window goal rate crosses 80%
+
+- Iterations 3586 and 3587 reported `average_goal_reached` of 0.8055 and
+  0.8067, with complete reward of 0.1644 and 0.1642. This is the first
+  monitored adjacent-iteration window above 80%.
+- At iteration 3587, `average_stage=4.6074`; goal/complete remained stable
+  while the official curriculum reduced `termination_level` and
+  `reward_penalty_scale` to 0.4631 and 0.4632.
+- Iteration 3587 reached 3,761,242,112 total timesteps at 23,373 steps/s and
+  44.86 s/iteration. The step-3550 checkpoint was valid; parent plus four
+  ranks, eight-GPU visibility, and error scans remained healthy.
+- This matches the expected training-range milestone but remains distinct from
+  an independent full-reset evaluation result.
+
+### Post-curriculum performance regression watch
+
+- By iterations 3703-3704, `average_goal_reached` declined to 0.6926 and
+  0.6885 from the monitored 0.8067 peak at iteration 3587; complete reward
+  declined from 0.1642 to 0.1377 and `average_stage` to 4.3154.
+- The decline coincides with the official curriculum reaching
+  `termination_level=reward_penalty_scale=0.2405`; mean reward became negative
+  (-3.0771 at iteration 3704). This is a sustained metric warning across
+  multiple checkpoint windows, not a runtime crash.
+- The parent and four ranks remained healthy, all eight GPUs were visible, the
+  step-3700 checkpoint was valid, and no Traceback, OOM, NCCL error,
+  RuntimeError, or NaN was found. Monitor-only control remains unchanged; no
+  intervention was made.
+- Follow-up at iterations 3742-3743 confirmed the decline continued: goal was
+  0.6627/0.6570, `average_stage` reached 4.2448, complete reward was 0.1307,
+  and mean reward remained negative (-3.8924) with curriculum scale 0.2258.
+  Runtime health remained normal; the regression watch therefore remains a
+  learning/curriculum issue rather than an infrastructure failure.
+- At iterations 3918-3919 the official `reward_penalty_scale` reached its 0.2
+  floor. Goal stabilized at 0.6884/0.6902, complete reward at 0.1412/0.1424,
+  and `average_stage` at 4.2756. The step-3900 checkpoint was valid and runtime
+  health remained normal. No milestone archive was triggered because this did
+  not establish a new goal threshold or historical high.
+
 ## Next judgment point
 
 1. After strict corrected startup is confirmed, freeze its configuration. Do
@@ -476,4 +571,7 @@ this milestone. The first evaluation outputs inherited a stale
   monitor/coordinator report on 2026-08-20.
 - Official step-2250 checkpoint identity and iteration-2249 health:
   monitor/coordinator report on 2026-08-20.
+- Official iteration-3123 Stage-5/complete-task breakthrough, process/GPU
+  health, and step-3100 checkpoint identity: coordinator live read-only report
+  on 2026-08-20.
 - Step-750 measurements: archived diagnostic cited above.

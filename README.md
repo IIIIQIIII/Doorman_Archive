@@ -17,3 +17,12 @@ Original sources:
 
 - https://github.com/NVlabs/GR00T-VisualSim2Real/tree/doorman
 - https://arxiv.org/abs/2512.01061
+
+## Project notes maintained outside the frozen sources
+
+- `teacher_training/` — teacher-training recipe, staged-reset/reward notes, and reproduction evidence.
+- `evaluation/` — official evaluation semantics, paper/code distinction, current checkpoint results, and a reproducible 4090 evaluation runbook.
+- `status/` — current experiment and decision records.
+- `phase2_training/` — phase-two training notes.
+
+The archived `github/` and `arxiv/` trees are source snapshots. Operational notes and locally reproduced results belong in the documentation folders above, not inside those snapshots.

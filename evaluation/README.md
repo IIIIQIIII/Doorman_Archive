@@ -110,6 +110,20 @@ See `paper_benchmark.md` for details.
 - `README.md` — overview and quick-start eval usage.
 - `code_eval_pipeline.md` — what the official evaluator actually does and what it outputs.
 - `paper_benchmark.md` — evaluation protocol described in the DoorMan paper and how it differs from the code-level evaluator.
+- `official_teacher_reproduction_eval_20260821.md` — the 2026-08-21 official-teacher checkpoint results, interpretation, exact 4090 protocol, video/sync procedure, and artifact map.
+- `run_checkpoint_eval_4090.sh` — parameterized reproduction script for a 128-episode metrics run plus a separate 8-environment third-person viewer run.
+- `post_open_quality_step5450_20260821/README.md` — metrics-only diagnosis of the step-5450 post-open crab gait and arm-rest failure, including exact reproduction and artifact locations.
+
+## Current reproduction result
+
+The latest checkpoint evaluated in the 2026-08-19 teacher reproduction is step 5450. Under the frozen seed-42, 128-full-reset protocol it completed 117/128 episodes (91.41%). Every trajectory that reached Stage 1 also reached Stage 5; the 11 failures remained in Stage 0. The immediately preceding step-5350 checkpoint completed 119/128 (92.97%).
+
+See `official_teacher_reproduction_eval_20260821.md` before running or interpreting another checkpoint. In particular, the 8-environment viewer run is a separate qualitative run and must not replace the 128-episode quantitative result.
+
+For behavior quality beyond binary task completion, see
+`post_open_quality_step5450_20260821/README.md`. The diagnostic reproduces the
+91.41% completion rate while showing systematic lateral traversal and a
+wrist-dominated terminal arm-rest failure.
 
 ## Archived source map
 
