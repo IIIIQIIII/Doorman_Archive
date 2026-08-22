@@ -102,4 +102,38 @@ Training remains frozen through the planned observation window. This early
 gate does not authorize reward/config changes; the next fixed behavioral gate
 is step6200.
 
+## Step6200 observation gate
+
+The paired step6050/step6200 eval again produced 26/32 complete tasks on each
+side. Relative to step6050, four of eight Q4 arm/action metrics and five of six
+error slopes improved, but every absolute physical gate still failed. Relative
+to V2 at the same step6200, V3 improved only three of eight Q4 metrics and three
+of six slopes. V3 also increased raw action RMS to 0.6404/0.6788, compared with
+0.6087/0.5879 under V2.
+
+The decisive intervention disabled only the Stage-5 arm attractor at the same
+V3 step6200 checkpoint. Attractor-on success was 26/32; attractor-off success
+was 0/32. V2 step6200 had retained 17/32 success under the same intervention.
+V3 has therefore not reduced scaffold dependence by step6200 and is currently
+worse than V2 on that causal measure.
+
+Training telemetry at iteration 6277 showed lower mean arm error, harmful joint
+fraction 0.6541, outward magnitude 0.0723, and settled fraction 0.3219, but goal
+rate had fallen to 0.8369 and relapse remained 0.5038. This combination warns
+that reducing average harmful magnitude can coexist with stronger attractor
+dependence; arm metrics alone are not accepted as proof of recovery.
+
+The local evidence bundle is:
+
+`../../eval_results/arm_reward_v3_gate_step6200_20260822_1500/`
+
+`ATTRACTOR_ON_TO_OFF.md` records the 81.25-point loss and
+`V2_STEP6200_OFF_TO_V3_STEP6200_OFF.md` records the direct V2→V3 intervention
+comparison. Because the V3 OFF run had zero successful trajectories, quartile
+metrics are correctly reported as `n/a`, not zero or passing values.
+
+The experiment remains frozen through step6400 to complete the precommitted
+causal window. This is negative evidence against V3, not authorization to chase
+an intermediate checkpoint with another reward change.
+
 This file is outside `github/` and `arxiv/`; neither directory is modified.

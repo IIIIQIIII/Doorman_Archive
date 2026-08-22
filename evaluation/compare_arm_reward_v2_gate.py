@@ -37,18 +37,42 @@ def load_analysis(path: Path) -> dict[str, Any]:
     return data
 
 
-def value(data: dict[str, Any], quartile: str, metric: str) -> float:
-    return float(
+def optional_float(raw: Any) -> float | None:
+    return None if raw is None else float(raw)
+
+
+def value(data: dict[str, Any], quartile: str, metric: str) -> float | None:
+    return optional_float(
         data["quartiles_by_normalized_post_open_progress"][quartile][metric]["mean"]
     )
 
 
-def slope(data: dict[str, Any], metric: str) -> float:
-    return float(data["per_episode_linear_slopes_per_second"][metric]["mean"])
+def slope(data: dict[str, Any], metric: str) -> float | None:
+    return optional_float(
+        data["per_episode_linear_slopes_per_second"][metric]["mean"]
+    )
 
 
-def finite_ratio(numerator: float, denominator: float) -> float | None:
-    return numerator / denominator if abs(denominator) > 1.0e-12 else None
+def finite_ratio(
+    numerator: float | None, denominator: float | None
+) -> float | None:
+    if numerator is None or denominator is None or abs(denominator) <= 1.0e-12:
+        return None
+    return numerator / denominator
+
+
+def difference(candidate: float | None, anchor: float | None) -> float | None:
+    if candidate is None or anchor is None:
+        return None
+    return candidate - anchor
+
+
+def less_than(value_: float | None, threshold: float) -> bool:
+    return value_ is not None and value_ < threshold
+
+
+def no_more_than(value_: float | None, threshold: float) -> bool:
+    return value_ is not None and value_ <= threshold
 
 
 def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, Any]:
@@ -65,7 +89,7 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
             "anchor_q4": anchor_q4,
             "candidate_q2": candidate_q2,
             "candidate_q4": candidate_q4,
-            "candidate_minus_anchor_q4": candidate_q4 - anchor_q4,
+            "candidate_minus_anchor_q4": difference(candidate_q4, anchor_q4),
             "anchor_q4_over_q2": finite_ratio(anchor_q4, anchor_q2),
             "candidate_q4_over_q2": finite_ratio(candidate_q4, candidate_q2),
         }
@@ -76,8 +100,8 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
                 {
                     "anchor_slope_per_s": anchor_slope,
                     "candidate_slope_per_s": candidate_slope,
-                    "candidate_minus_anchor_slope_per_s": (
-                        candidate_slope - anchor_slope
+                    "candidate_minus_anchor_slope_per_s": difference(
+                        candidate_slope, anchor_slope
                     ),
                 }
             )
@@ -88,32 +112,36 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
         "left_arm_q4_over_q2_le_1_2": (
             metrics["left_arm_rest_error_normalized"]["candidate_q4_over_q2"]
             is not None
-            and metrics["left_arm_rest_error_normalized"][
-                "candidate_q4_over_q2"
-            ]
-            <= 1.2
+            and no_more_than(
+                metrics["left_arm_rest_error_normalized"][
+                    "candidate_q4_over_q2"
+                ],
+                1.2,
+            )
         ),
         "right_arm_q4_over_q2_le_1_2": (
             metrics["right_arm_rest_error_normalized"]["candidate_q4_over_q2"]
             is not None
-            and metrics["right_arm_rest_error_normalized"][
-                "candidate_q4_over_q2"
-            ]
-            <= 1.2
+            and no_more_than(
+                metrics["right_arm_rest_error_normalized"][
+                    "candidate_q4_over_q2"
+                ],
+                1.2,
+            )
         ),
         "all_error_slopes_le_0_005_per_s": all(
-            metrics[name]["candidate_slope_per_s"] <= 0.005
+            no_more_than(metrics[name]["candidate_slope_per_s"], 0.005)
             for name in SLOPE_METRICS
         ),
-        "left_wrist_q4_lt_0_12": (
-            metrics["left_wrist_rest_error_normalized"]["candidate_q4"] < 0.12
+        "left_wrist_q4_lt_0_12": less_than(
+            metrics["left_wrist_rest_error_normalized"]["candidate_q4"], 0.12
         ),
-        "right_proximal_q4_lt_0_06": (
-            metrics["right_proximal_rest_error_normalized"]["candidate_q4"]
-            < 0.06
+        "right_proximal_q4_lt_0_06": less_than(
+            metrics["right_proximal_rest_error_normalized"]["candidate_q4"],
+            0.06,
         ),
         "both_arm_action_q4_lt_0_25": all(
-            metrics[name]["candidate_q4"] < 0.25
+            less_than(metrics[name]["candidate_q4"], 0.25)
             for name in (
                 "left_arm_action_delta_rms",
                 "right_arm_action_delta_rms",
@@ -122,14 +150,26 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
     }
 
     direction_metrics = ERROR_METRICS + ARM_METRICS[6:]
+    comparable_q4 = [
+        name
+        for name in direction_metrics
+        if metrics[name]["candidate_q4"] is not None
+        and metrics[name]["anchor_q4"] is not None
+    ]
     q4_improved = sum(
         metrics[name]["candidate_q4"] < metrics[name]["anchor_q4"]
-        for name in direction_metrics
+        for name in comparable_q4
     )
+    comparable_slopes = [
+        name
+        for name in SLOPE_METRICS
+        if metrics[name]["candidate_slope_per_s"] is not None
+        and metrics[name]["anchor_slope_per_s"] is not None
+    ]
     slope_improved = sum(
         metrics[name]["candidate_slope_per_s"]
         < metrics[name]["anchor_slope_per_s"]
-        for name in SLOPE_METRICS
+        for name in comparable_slopes
     )
 
     return {
@@ -144,12 +184,13 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
             "success_rate": candidate_success,
         },
         "success_rate_delta": candidate_success - anchor_success,
+        "physical_comparison_available": bool(comparable_q4),
         "metrics": metrics,
         "direction_summary": {
             "q4_metrics_improved": q4_improved,
-            "q4_metrics_compared": len(direction_metrics),
+            "q4_metrics_compared": len(comparable_q4),
             "error_slopes_improved": slope_improved,
-            "error_slopes_compared": len(SLOPE_METRICS),
+            "error_slopes_compared": len(comparable_slopes),
         },
         "acceptance_gates": gates,
         "all_final_acceptance_gates_pass": all(gates.values()),
@@ -158,6 +199,10 @@ def comparison(anchor: dict[str, Any], candidate: dict[str, Any]) -> dict[str, A
 
 def fmt(value_: float | None) -> str:
     return "n/a" if value_ is None else f"{value_:.4f}"
+
+
+def fmt_signed(value_: float | None) -> str:
+    return "n/a" if value_ is None else f"{value_:+.4f}"
 
 
 def markdown(report: dict[str, Any]) -> str:
@@ -186,7 +231,7 @@ def markdown(report: dict[str, Any]) -> str:
                     name,
                     fmt(item["anchor_q4"]),
                     fmt(item["candidate_q4"]),
-                    f"{item['candidate_minus_anchor_q4']:+.4f}",
+                    fmt_signed(item["candidate_minus_anchor_q4"]),
                     fmt(item["candidate_q4_over_q2"]),
                     fmt(item.get("anchor_slope_per_s")),
                     fmt(item.get("candidate_slope_per_s")),
@@ -196,6 +241,17 @@ def markdown(report: dict[str, Any]) -> str:
         )
 
     direction = report["direction_summary"]
+    if not report["physical_comparison_available"]:
+        lines.extend(
+            [
+                "",
+                (
+                    "The candidate produced no comparable successful post-open "
+                    "trajectory quartiles. Physical entries are `n/a`; this is "
+                    "missing successful behavior, not a passing metric."
+                ),
+            ]
+        )
     lines.extend(
         [
             "",
