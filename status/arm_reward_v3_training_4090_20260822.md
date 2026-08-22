@@ -80,4 +80,26 @@ if objective arm errors/action RMS improve, harmful joint magnitude falls,
 task success stays within the safety gate, and attractor-off behavior approaches
 the trained configuration.
 
+## Step6100 direction gate
+
+The first immutable V3 checkpoint was evaluated against the same step6050
+anchor for 32 full-reset episodes per side. Both checkpoints completed 26/32
+tasks, so V3 incurred no early task-success loss. Relative to step6050, only
+three of eight Q4 arm/action metrics and four of six physical-error slopes
+improved; all final absolute arm gates still failed.
+
+A stricter same-step comparison against V2 step6100 found that V3 improved only
+two of eight Q4 metrics and one of six slopes. V3 left/right raw action RMS was
+0.6150/0.6368, compared with 0.5916/0.6174 for V2. This is retained as negative
+evidence: the continuous signal is measurable and correctly budgeted, but has
+not yet produced better early behavior than the binary V2 term.
+
+The local artifact bundle is:
+
+`../../eval_results/arm_reward_v3_gate_step6100_20260822_1428/`
+
+Training remains frozen through the planned observation window. This early
+gate does not authorize reward/config changes; the next fixed behavioral gate
+is step6200.
+
 This file is outside `github/` and `arxiv/`; neither directory is modified.
