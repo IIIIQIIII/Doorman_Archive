@@ -1,0 +1,2 @@
+{"episode_count": 128, "successful_episode_count": 115, "analysis": "/sda/mashijian/doorman_arm_reward_v4a_timing_20260822/evals/arm_v4a_final_step6300_20260822_1728/evals/step6200/diag/post_open_analysis_v2.json"}
+diagnostic complete; evaluator_exit=0; success=115/128; output=/sda/mashijian/doorman_arm_reward_v4a_timing_20260822/evals/arm_v4a_final_step6300_20260822_1728/evals/step6200
